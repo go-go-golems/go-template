@@ -1,6 +1,6 @@
+name: release
 on:
-  workflow_dispatch:
-
+  workflow_dispatch:  # Allow manual triggers
   push:
     # run only against tags
     tags:
@@ -15,7 +15,6 @@ permissions:
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
-    environment: release
     steps:
       - uses: actions/checkout@v6
         with:
@@ -23,9 +22,13 @@ jobs:
       - run: git fetch --force --tags
       - uses: actions/setup-go@v6
         with:
-          go-version: '>=1.19.5'
+          go-version-file: go.mod
           cache: true
-
+      - name: OSXCross for CGO Support
+        run: |
+          mkdir -p /home/runner/work/osxcross
+          git clone https://github.com/plentico/osxcross-target.git /home/runner/work/osxcross/target
+          echo "ENABLE_OSXCROSS=1" >> $GITHUB_ENV
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v6
