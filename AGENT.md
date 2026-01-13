@@ -52,7 +52,6 @@ Use capture-pane to read the output.
 - Use bootstrap for styling.
 - Store css, html and js in different files in a static directory.
 - Use go:embed to serve static files.
-- Use templ for go templates, assume I'm running templ generate -watch in the background.
 - Always serve static files under /static/ URL paths, never directly under functional paths like /admin/
 </webGuidelines>
 
@@ -65,6 +64,4 @@ If me or you the LLM agent seem to go down too deep in a debugging/fixing rabbit
 Don't add backwards compatibility layers or adapters unless explicitly asked. If you think there is a need for a backwards compatibility or adapting to an existing interface, STOP AND ASK ME IF THAT IS NECESSARY. Usually, I don't need backwards compatibility.
 
 If it looks like your edits aren't applied, stop immediately and say "STOPPING BECAUSE EDITING ISN'T WORKING".
-
-Run the format_file tool at the end of each response.
 </generalGuidelines>
