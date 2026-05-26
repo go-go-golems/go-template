@@ -1,4 +1,4 @@
-.PHONY: gifs
+.PHONY: gifs logcopter-generate logcopter-check
 
 all: gifs
 
@@ -33,6 +33,12 @@ test:
 build:
 	GOWORK=off go generate ./...
 	GOWORK=off go build ./...
+
+logcopter-generate:
+	GOWORK=off go generate ./...
+
+logcopter-check:
+	GOWORK=off go tool logcopter-gen -area-prefix go-go-golems.XXX -strip-prefix github.com/go-go-golems/XXX -check ./pkg/...
 
 goreleaser:
 	GOWORK=off goreleaser release $(GORELEASER_ARGS) $(GORELEASER_TARGET)
