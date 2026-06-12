@@ -54,14 +54,17 @@ logcopter-check:
 glazed-lint-build:
 	@if [ -n "$(GLAZED_VERSION)" ] && [ "$(GLAZED_VERSION)" != "(devel)" ]; then \
 		echo "Installing $(GLAZED_LINT_PKG)@$(GLAZED_VERSION)"; \
-		GOBIN=$(dir $(GLAZED_LINT_BIN)) GOWORK=off go install $(GLAZED_LINT_PKG)@$(GLAZED_VERSION); \
+		GOBIN=$(dir $(GLAZED_LINT_BIN)) GOWORK=off go install $(GLAZED_LINT_PKG)@$(GLAZED_VERSION) || { \
+			echo "Falling back to $(GLAZED_LINT_PKG)@$(GLAZED_LINT_VERSION)"; \
+			GOBIN=$(dir $(GLAZED_LINT_BIN)) GOWORK=off go install $(GLAZED_LINT_PKG)@$(GLAZED_LINT_VERSION); \
+		}; \
 	else \
 		echo "Installing $(GLAZED_LINT_PKG)@$(GLAZED_LINT_VERSION)"; \
 		GOBIN=$(dir $(GLAZED_LINT_BIN)) GOWORK=off go install $(GLAZED_LINT_PKG)@$(GLAZED_LINT_VERSION); \
 	fi
 
 glazed-lint: glazed-lint-build
-	$(GLAZED_LINT_BIN) $(GLAZED_LINT_FLAGS) ./...
+	GOWORK=off $(GLAZED_LINT_BIN) $(GLAZED_LINT_FLAGS) ./...
 
 goreleaser:
 	GOWORK=off goreleaser release $(GORELEASER_ARGS) $(GORELEASER_TARGET)
