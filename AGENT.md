@@ -30,26 +30,19 @@ Use capture-pane to read the output.
 
 <goGuidelines>
 - When implementing go interfaces, use the var _ Interface = &Foo{} to make sure the interface is always implemented correctly.
-- When building web applications, use bootstrap CSS unless otherwise indicated.
 - Always use a context argument when appropriate.
-- Use cobra for command-line applications.
+- Use glazed command framework for command-line applications.
 - Use the "defaults" package name, instead of "default" package name, as it's reserved in go.
 - Use github.com/pkg/errors for wrapping errors.
 - When starting goroutines, use errgroup.
 
 - Only use the toplevel go.mod, don't create new ones.
-- When writing a new experiment / app, add zerolog logging to help debug and figure out how it works, add --log-level flag to set the log level.
 - When using go:embed, import embed as `_ "embed"`
 - When using build tagged features, make sure the software compiles without the tag as well
 </goGuidelines>
 
-<libraryGuidelines>
-- when interfacing with the google gemini/genai APIs, use the new https://pkg.go.dev/google.golang.org/genai package
-</libraryGuidelines>
-
 <webGuidelines>
-- Use bun, react and rtk-query. Use typescript.
-- Use bootstrap for styling.
+- Use pnpm, react and rtk-query. Use typescript.
 - Store css, html and js in different files in a static directory.
 - Use go:embed to serve static files.
 - Always serve static files under /static/ URL paths, never directly under functional paths like /admin/
