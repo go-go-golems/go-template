@@ -1,60 +1,33 @@
-# Agent Guidelines for go-go-golems go projects
+# Agent guidelines for go-go-golems Go projects
 
-## Build Commands
+## Build commands
 
-- Run a binary in XXX/YYY/FOOO: `go run ./XXX/YYY/FOOO` . Use this instead of build + ./XXX.
-- Build: `go build ./...`
-- Test: `go test ./...`
-- Run single test: `go test ./pkg/path/to/package -run TestName`
-- Generate: `go generate ./...`
-- Lint: `golangci-lint run -v` or `make lint`
-- Format: `go fmt ./...`
+- Run the template CLI: `GOWORK=off go run ./cmd/XXX`.
+- Build: `make build`; build the distributable binary: `make build-bin`.
+- Test: `make test`; run one test: `GOWORK=off go test ./pkg/path -run TestName`.
+- Generate logging metadata: `make logcopter-generate`; verify it: `make logcopter-check`.
+- Lint: `make lint`; format: `gofmt -w $(git ls-files '*.go')`.
+- Validate release configuration: `goreleaser check --config .goreleaser.yaml` and `goreleaser check --soft --config .goreleaser.yaml`.
 
-IMPORTANT: To run a server and do some interaction with it, use tmux, this makes it very easy to kill a server.
-Use capture-pane to read the output.
+Use `GOWORK=off` for project-local Go commands. Use tmux for long-running servers or interactive smoke tests.
 
-## Project Structure
+## Project structure
 
-- `cmd/`: CLI commands and entry points
-- `pkg/`: Library code organized by domain
-- `examples/`: Example configurations and usage
-- `doc/`: Documentation
-- `ttmp/YYYY-MM-DD/`: this is where all temporary documentation as well as debugging logs and other reports go
+- `cmd/`: binary entry points and command wiring.
+- `pkg/`: reusable public packages.
+- `examples/`: runnable examples and sample configuration.
+- `doc/`: optional product documentation.
+- `ttmp/`: docmgr ticket workspaces when documentation management is initialized.
 
-<runningProcessesGuidelines>
-- When testing TUIs, use tmux and capture-pane to interact with the UI.
-- When using tmux, try to batch as many commands as possible when using send-keys.
-- When running long-running processes (servers, etc...), use tmux to more easily interact and kill them.
-- Kill a process using port $PORT: `lsof-who -p $PORT -k`. When building a web server, ALWAYS use this command to kill the process.
-</runningProcessesGuidelines>
+## Go and command boundaries
 
-<goGuidelines>
-- When implementing go interfaces, use the var _ Interface = &Foo{} to make sure the interface is always implemented correctly.
-- Always use a context argument when appropriate.
-- Use glazed command framework for command-line applications.
-- Use the "defaults" package name, instead of "default" package name, as it's reserved in go.
-- Use github.com/pkg/errors for wrapping errors.
-- When starting goroutines, use errgroup.
+- Use Glazed for CLI configuration, structured output, and help where the project is a CLI.
+- Keep domain packages independent of command-framework concerns.
+- Use contexts for cancellation-capable operations and establish interface assertions where a concrete implementation is meant to satisfy an interface.
+- Do not add compatibility layers or adapters without an explicit requirement.
 
-- Only use the toplevel go.mod, don't create new ones.
-- When using go:embed, import embed as `_ "embed"`
-- When using build tagged features, make sure the software compiles without the tag as well
-</goGuidelines>
+## Release boundary
 
-<webGuidelines>
-- Use pnpm, react and rtk-query. Use typescript.
-- Store css, html and js in different files in a static directory.
-- Use go:embed to serve static files.
-- Always serve static files under /static/ URL paths, never directly under functional paths like /admin/
-</webGuidelines>
+A `v*` tag uses split Linux/macOS GoReleaser builds. Builders may read only a build license through `release-XXX-builder`; the final shared publisher uses `release-XXX-publisher`, caller-repository `GITHUB_TOKEN`, and a short-lived GitHub App token for the fixed Homebrew tap.
 
-<debuggingGuidelines>
-If me or you the LLM agent seem to go down too deep in a debugging/fixing rabbit hole in our conversations, remind me to take a breath and think about the bigger picture instead of hacking away. Say: "I think I'm stuck, let's TOUCH GRASS".  IMPORTANT: Don't try to fix errors by yourself more than twice in a row. Then STOP. Don't do anything else.
-
-</debuggingGuidelines>
-
-<generalGuidelines>
-Don't add backwards compatibility layers or adapters unless explicitly asked. If you think there is a need for a backwards compatibility or adapting to an existing interface, STOP AND ASK ME IF THAT IS NECESSARY. Usually, I don't need backwards compatibility.
-
-If it looks like your edits aren't applied, stop immediately and say "STOPPING BECAUSE EDITING ISN'T WORKING".
-</generalGuidelines>
+Before enabling a generated repository's first tag release, add its immutable repository ID and exact workflow ref to Terraform's `release_publishers` allowlist, then apply a reviewed normal plan. Never add repository Action secrets for GoReleaser, Homebrew, Fury, signing keys, Vault tokens, or arbitrary Vault-path inputs.
