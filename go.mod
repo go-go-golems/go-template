@@ -1,8 +1,6 @@
 module github.com/go-go-golems/XXX
 
-go 1.26.1
-
-toolchain go1.26.5
+go 1.26.6
 
 require github.com/go-go-golems/logcopter v0.1.1
 
